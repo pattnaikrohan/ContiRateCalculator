@@ -51,23 +51,20 @@ def create_access_token(data: dict):
     to_encode.update({"exp": expire})
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
-def get_current_user(authorization: str = Header(...)):
-    if not authorization or not authorization.startswith("Bearer "):
-        raise HTTPException(status_code=401, detail="Missing or invalid token")
-    
-    parts = authorization.split(" ")
-    if len(parts) != 2:
-        raise HTTPException(status_code=401, detail="Malformed token")
-        
-    token = parts[1]
+def get_current_user(authorization: str = Header(None)):
+    if not authorization:
+        return None  # allow unauthenticated requests if needed
+
+    if not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Invalid token")
+
+    token = authorization.split(" ")[1]
+
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        email: str = payload.get("sub")
-        if email is None:
-            raise HTTPException(status_code=401, detail="Invalid token payload")
-        return email
+        return payload.get("sub")
     except Exception:
-        raise HTTPException(status_code=401, detail="Could not validate credentials")
+        raise HTTPException(status_code=401, detail="Invalid token")
 
 # Auth Endpoints
 @app.post("/api/auth/register")
@@ -187,7 +184,7 @@ class CalcRequest(BaseModel):
     gst: bool = False
 
 @app.post("/api/calculate")
-def calculate_rate(req: CalcRequest, email: str = Depends(get_current_user)):
+def calculate_rate(req: CalcRequest, email: Optional[str] = Depends(get_current_user)):
     try:
         weight_raw = float(req.weight)
         num_reels = int(max(1, req.reels))
