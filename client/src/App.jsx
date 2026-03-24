@@ -86,7 +86,8 @@ function CalculatorApp({ token, userEmail, onLogout }) {
     const timer = setTimeout(() => {
       setLoading(true);
       setError(null);
-      fetch('http://127.0.0.1:8001/api/calculate', {
+      const apiUrl = import.meta.env.VITE_API_URL || '';
+      fetch(`${apiUrl}/api/calculate`, {
         method: 'POST',
         headers: { 
             'Content-Type': 'application/json',

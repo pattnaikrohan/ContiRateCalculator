@@ -17,8 +17,9 @@ function AuthPage({ onLogin }) {
 
     const endpoint = isLogin ? '/api/auth/login' : '/api/auth/register';
     
+    const apiUrl = import.meta.env.VITE_API_URL || '';
     try {
-      const response = await fetch(`http://127.0.0.1:8001${endpoint}`, {
+      const response = await fetch(`${apiUrl}${endpoint}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })
