@@ -6,7 +6,7 @@ on:
       - main
 
 env:
-  AZURE_WEBAPP_NAME: ContiRateCalculator   # ⚠️ must match your Azure app name
+  AZURE_WEBAPP_NAME: conti-rate-backend   # ⚠️ must match your Azure app name
   PYTHON_VERSION: '3.11'
 
 jobs:
