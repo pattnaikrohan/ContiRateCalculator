@@ -18,5 +18,5 @@ def png_to_svg(png_path, svg_path):
         f.write(svg_content)
         
 if __name__ == "__main__":
-    png_to_svg(r"D:\Conti Rate Calculator\aaw1.png", r"D:\Conti Rate Calculator\client\src\assets\aaw1.svg")
+    png_to_svg(r"D:\Conti Rate Calculator\Image (1).png", r"D:\Conti Rate Calculator\client\src\assets\aaw1.svg")
     print("Successfully converted PNG to SVG!")

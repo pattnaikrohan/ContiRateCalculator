@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import logo from './assets/aaw.png';
+import logo from './assets/aaw1.svg';
 
 function AuthPage({ onLogin }) {
   const [isLogin, setIsLogin] = useState(true);
@@ -53,8 +53,7 @@ function AuthPage({ onLogin }) {
           <div className="brand-section" style={{alignItems: 'center', textAlign: 'center'}}>
             <img src={logo} alt="AAW Logo" className="brand-logo" />
             <div className="brand-text">
-              <h1>Conti Rate Calculator</h1>
-              <p>Instant precision estimates for Coastal Reel movements.</p>
+              <h1>Coastal Conveyor Reel Estimator</h1>
             </div>
           </div>
         </header>

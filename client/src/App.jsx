@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import logo from './assets/aaw.png';
+import logo from './assets/aaw1.svg';
 import AuthPage from './AuthPage';
 import './index.css';
 
@@ -77,7 +77,11 @@ function CalculatorApp({ token, userEmail, onLogout }) {
 
   useEffect(() => {
     const w = parseFloat(formData.weight);
-    if (!formData.dest || isNaN(w) || w <= 0) {
+    const L = parseFloat(formData.dimL);
+    const W = parseFloat(formData.dimW);
+    const H = parseFloat(formData.dimH);
+
+    if (!formData.dest || isNaN(w) || w <= 0 || isNaN(L) || L <= 0 || isNaN(W) || W <= 0 || isNaN(H) || H <= 0) {
       setResult(null);
       setError(null);
       return;
@@ -135,13 +139,12 @@ function CalculatorApp({ token, userEmail, onLogout }) {
         <div className="brand-section">
           <img src={logo} alt="AAW Logo" className="brand-logo" />
           <div className="brand-text">
-            <h1>Conti Rate Calculator</h1>
-            <p>Instant precision estimates for Coastal Reel movements.</p>
+            <h1>Coastal Conveyor Reel Estimator</h1>
           </div>
         </div>
         <div className="meta-info">
           <div style={{fontWeight: 500, color: 'var(--text-main)', marginBottom: '0.25rem'}}>{userEmail}</div>
-          <div>Valid: 01/11/2026 – 31/12/2026</div>
+          <div>Valid: 01/01/2026 – 31/12/2026</div>
           <div style={{display: 'flex', gap: '0.75rem', alignItems: 'center', marginTop: '0.5rem'}}>
             <button className="theme-toggle" onClick={() => setTheme(t => t === 'dark' ? 'light' : 'dark')} title="Toggle Theme">
                 {theme === 'dark' ? (
@@ -171,7 +174,7 @@ function CalculatorApp({ token, userEmail, onLogout }) {
               </div>
               <div className="form-group">
                 <label>Destination Location</label>
-                <select name="dest" value={formData.dest} onChange={handleChange}>
+                <select name="dest" value={formData.dest} onChange={handleChange} required>
                   {DESTINATIONS.map(d => (
                     <option key={d.value} value={d.value}>{d.label}</option>
                   ))}
@@ -186,22 +189,22 @@ function CalculatorApp({ token, userEmail, onLogout }) {
             <div className="input-row">
               <div className="form-group">
                 <label>Weight (T)</label>
-                <input type="number" name="weight" min="1" max="59" step="0.5" placeholder="e.g. 20" value={formData.weight} onChange={handleChange} />
+                <input type="number" name="weight" min="1" max="59" step="0.5" placeholder="e.g. 20" value={formData.weight} onChange={handleChange} required />
               </div>
               <div className="form-group">
                 <label>Quantity</label>
-                <input type="number" name="reels" min="1" max="20" step="1" value={formData.reels} onChange={handleChange} />
+                <input type="number" name="reels" min="1" max="20" step="1" value={formData.reels} onChange={handleChange} required />
               </div>
             </div>
 
             <div className="form-group" style={{marginTop: '0.25rem'}}>
               <label>Dimensions in cm (L × W × H)</label>
               <div className="dimensions-container">
-                <input type="number" name="dimL" min="1" step="1" placeholder="L" value={formData.dimL} onChange={handleChange} />
+                <input type="number" name="dimL" min="1" step="1" placeholder="L" value={formData.dimL} onChange={handleChange} required />
                 <span className="dim-sep">×</span>
-                <input type="number" name="dimW" min="1" step="1" placeholder="W" value={formData.dimW} onChange={handleChange} />
+                <input type="number" name="dimW" min="1" step="1" placeholder="W" value={formData.dimW} onChange={handleChange} required />
                 <span className="dim-sep">×</span>
-                <input type="number" name="dimH" min="1" step="1" placeholder="H" value={formData.dimH} onChange={handleChange} />
+                <input type="number" name="dimH" min="1" step="1" placeholder="H" value={formData.dimH} onChange={handleChange} required />
               </div>
             </div>
 
@@ -288,23 +291,25 @@ function CalculatorApp({ token, userEmail, onLogout }) {
 
       </main>
 
-      <section className="terms-section glass-panel fade-in">
-        <h3 className="terms-title">TERMS & CONDITIONS</h3>
-        <ul className="terms-list">
-          <li>Seafreight calculated on FRT basis — weight (T) or CBM whichever is greater, at a 1:1 ratio per reel.</li>
-          <li>Seafreight rates subject to fluctuation in BAF, coastal surcharge & local charges. Offer basis 2 units per Mafi trailer. Subject to available equipment and vessel schedule.</li>
-          <li>Melbourne crane cost is an average assumption of $1,975 per reel for reels over 30T. Actual cost determined by terminal operator. Melbourne has fork capacity to approx. 31T subject to reel dimensions.</li>
-          <li>Fremantle crane subject to availability. If unavailable, a mobile crane will be required at cost + 10%. Crane rates reviewed by terminal operator 30 June or as required. Basis vessel discharge at Berth 11 & 12.</li>
-          <li>Destination transport rates are base rates ex Fremantle Port. A 38% fuel surcharge is applied on top and reviewed monthly.</li>
-          <li>Western Power permit ($400 per reel) applicable for reels above 360 cm in height. Applied as a mandatory charge.</li>
-          <li>Port booking fee of $50 per reel applies to all Perth metro and mine site deliveries.</li>
-          <li>Pilot vehicles apply at $400 per reel for movements between 0100–0600hrs on reels 34T–52T.</li>
-          <li>Mine site deliveries allow 5hrs across port & mine site. Time starts from gate entry. Demurrage rate: $320/hr after free time allowance.</li>
-          <li>Transport trailers subject to availability. Max loaded height ex Fremantle is 5.8m (incl. 1m for trailer).</li>
-          <li>10% GST applicable where applicable. All work performed under AAW Global Logistics Pty Ltd general terms & conditions, available upon request.</li>
-          <li className="terms-highlight">This is an estimation only. Final rates applied as per conditions agreed in MF tender.</li>
-        </ul>
-      </section>
+      {result && (
+        <section className="terms-section glass-panel fade-in">
+          <h3 className="terms-title">TERMS & CONDITIONS</h3>
+          <ul className="terms-list">
+            <li>Seafreight calculated on FRT basis — weight (T) or CBM whichever is greater, at a 1:1 ratio per reel.</li>
+            <li>Seafreight rates subject to fluctuation in BAF, coastal surcharge & local charges. Offer basis 2 units per Mafi trailer. Subject to available equipment and vessel schedule.</li>
+            <li>Melbourne crane cost is an average assumption of $1,975 per reel for reels over 30T. Actual cost determined by terminal operator. Melbourne has fork capacity to approx. 31T subject to reel dimensions.</li>
+            <li>Fremantle crane subject to availability. If unavailable, a mobile crane will be required at cost + 10%. Crane rates reviewed by terminal operator 30 June or as required. Basis vessel discharge at Berth 11 & 12.</li>
+            <li>Destination transport rates are base rates ex Fremantle Port. A 38% fuel surcharge is applied on top and reviewed monthly.</li>
+            <li>Western Power permit ($400 per reel) applicable for reels above 360 cm in height. Applied as a mandatory charge.</li>
+            <li>Port booking fee of $50 per reel applies to all Perth metro and mine site deliveries.</li>
+            <li>Pilot vehicles apply at $400 per reel for movements between 0100–0600hrs on reels 34T–52T.</li>
+            <li>Mine site deliveries allow 5hrs across port & mine site. Time starts from gate entry. Demurrage rate: {result ? fmt(result.demurr) : '$320'}/hr after free time allowance.</li>
+            <li>Transport trailers subject to availability. Max loaded height ex Fremantle is 5.8m (incl. 1m for trailer).</li>
+            <li>10% GST applicable where applicable. All work performed under AAW Global Logistics Pty Ltd general terms & conditions, available upon request.</li>
+            <li className="terms-highlight">This is an estimation only. Final rates applied as per conditions agreed in MF tender.</li>
+          </ul>
+        </section>
+      )}
     </div>
   );
 }
