@@ -297,13 +297,13 @@ function CalculatorApp({ token, userEmail, onLogout }) {
           <ul className="terms-list">
             <li>Seafreight calculated on FRT basis — weight (T) or CBM whichever is greater, at a 1:1 ratio per reel.</li>
             <li>Seafreight rates subject to fluctuation in BAF, coastal surcharge & local charges. Offer basis 2 units per Mafi trailer. Subject to available equipment and vessel schedule.</li>
-            <li>Melbourne crane cost is an average assumption of $1,975 per reel for reels over 30T. Actual cost determined by terminal operator. Melbourne has fork capacity to approx. 31T subject to reel dimensions.</li>
+            <li className={result?.crane_applies ? "terms-highlight" : ""}>Melbourne crane cost is an average assumption of $1,975 per reel for reels over 30T. Actual cost determined by terminal operator. Melbourne has fork capacity to approx. 31T subject to reel dimensions.</li>
             <li>Fremantle crane subject to availability. If unavailable, a mobile crane will be required at cost + 10%. Crane rates reviewed by terminal operator 30 June or as required. Basis vessel discharge at Berth 11 & 12.</li>
             <li>Destination transport rates are base rates ex Fremantle Port. A 38% fuel surcharge is applied on top and reviewed monthly.</li>
-            <li>Western Power permit ($400 per reel) applicable for reels above 360 cm in height. Applied as a mandatory charge.</li>
+            <li className={result?.wp_applies ? "terms-highlight" : ""}>Western Power permit ($400 per reel) applicable for reels above 360 cm in height. Applied as a mandatory charge.</li>
             <li>Port booking fee of $50 per reel applies to all Perth metro and mine site deliveries.</li>
-            <li>Pilot vehicles apply at $400 per reel for movements between 0100–0600hrs on reels 34T–52T.</li>
-            <li>Mine site deliveries allow 5hrs across port & mine site. Time starts from gate entry. Demurrage rate: {result ? fmt(result.demurr) : '$320'}/hr after free time allowance.</li>
+            <li className={result?.pilot_applies ? "terms-highlight" : ""}>Pilot vehicles apply at $400 per reel for movements between 0100–0600hrs on reels 34T–52T.</li>
+            <li className="terms-highlight">Mine site deliveries allow 5hrs across port & mine site. Time starts from gate entry. Demurrage rate: {result ? fmt(result.demurr) : '$320'}/hr after free time allowance.</li>
             <li>Transport trailers subject to availability. Max loaded height ex Fremantle is 5.8m (incl. 1m for trailer).</li>
             <li>10% GST applicable where applicable. All work performed under AAW Global Logistics Pty Ltd general terms & conditions, available upon request.</li>
             <li className="terms-highlight">This is an estimation only. Final rates applied as per conditions agreed in MF tender.</li>

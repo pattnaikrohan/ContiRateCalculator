@@ -259,9 +259,15 @@ def calculate_rate(req: CalcRequest, email: Optional[str] = Depends(get_current_
             lines.append({"label": "Fuel surcharge (38% of transport)", "value": float(fuel_amt)})
             total += fuel_amt
 
-            wp_cost = 400.0 * num_reels
-            lines.append({"label": "Western Power permit ($400 per reel)", "value": float(wp_cost)})
-            total += wp_cost
+            if H > 360:
+                wp_cost = 400.0 * num_reels
+                lines.append({"label": "Western Power permit ($400 per reel)", "value": float(wp_cost)})
+                total += wp_cost
+
+            if 34 <= weight_raw <= 52:
+                pilot_cost = 400.0 * num_reels
+                lines.append({"label": "Pilot vehicles ($400 per reel)", "value": float(pilot_cost)})
+                total += pilot_cost
 
             port_fee = 50.0 * num_reels
             lines.append({"label": "Port booking fee ($50 per reel)", "value": float(port_fee)})
@@ -279,7 +285,10 @@ def calculate_rate(req: CalcRequest, email: Optional[str] = Depends(get_current_
             "reels": num_reels,
             "weightRaw": weight_raw,
             "basisLabel": basis_label,
-            "demurr": float(row_w.get('demurr', 0))
+            "demurr": float(row_w.get('demurr', 0)),
+            "wp_applies": H > 360 if is_metro or is_mine else False,
+            "pilot_applies": (34 <= weight_raw <= 52) if is_metro or is_mine else False,
+            "crane_applies": weight_raw > 30
         }
 
     except Exception as e:
