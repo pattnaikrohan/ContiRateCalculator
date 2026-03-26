@@ -1,6 +1,74 @@
 import { useState } from 'react';
 import logo from './assets/aaw1.svg';
 
+function RequestAccessModal({ onClose, onSuccess }) {
+  const [formData, setFormData] = useState({ name: '', email: '', company: '', message: '' });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+
+    const apiUrl = import.meta.env.VITE_API_URL || '';
+    try {
+      const response = await fetch(`${apiUrl}/api/auth/request-access`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      });
+
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.detail || 'Request failed');
+      
+      onSuccess('Request sent successfully! Matt will review your access soon.');
+      onClose();
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="modal-overlay">
+      <div className="glass-panel modal-content fade-in" style={{maxWidth: '400px', width: '90%'}}>
+        <h2 style={{marginBottom: '0.5rem'}}>Request Access</h2>
+        <p style={{fontSize: '0.8125rem', marginBottom: '1.5rem', opacity: 0.8}}>Submit your details to request an account.</p>
+        
+        <form onSubmit={handleSubmit} className="form-section" style={{gap: '1rem'}}>
+          <div className="form-group">
+            <label>Full Name</label>
+            <input type="text" required value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} />
+          </div>
+          <div className="form-group">
+            <label>Work Email</label>
+            <input type="email" required value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} />
+          </div>
+          <div className="form-group">
+            <label>Company</label>
+            <input type="text" required value={formData.company} onChange={e => setFormData({...formData, company: e.target.value})} />
+          </div>
+          <div className="form-group">
+            <label>Additional Info</label>
+            <textarea placeholder="Optional context..." value={formData.message} onChange={e => setFormData({...formData, message: e.target.value})} style={{minHeight: '80px', borderRadius: '8px', padding: '0.75rem'}} />
+          </div>
+
+          {error && <div className="auth-error" style={{margin: '0.5rem 0'}}>{error}</div>}
+
+          <div style={{display: 'flex', gap: '1rem', marginTop: '1rem'}}>
+            <button type="button" onClick={onClose} className="secondary-btn" style={{flex: 1}}>Cancel</button>
+            <button type="submit" className="primary-btn" style={{flex: 2}} disabled={loading}>
+              {loading ? 'Sending...' : 'Send Request'}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
 function AuthPage({ onLogin }) {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
@@ -8,6 +76,7 @@ function AuthPage({ onLogin }) {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showRequestModal, setShowRequestModal] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -96,13 +165,26 @@ function AuthPage({ onLogin }) {
             </button>
           </form>
 
-          <footer className="auth-footer" style={{marginTop: '1.5rem'}}>
-            <button onClick={() => setIsLogin(!isLogin)} style={{fontSize: '0.8125rem'}}>
+          <footer className="auth-footer" style={{marginTop: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.75rem', alignItems: 'center'}}>
+            <button onClick={() => setIsLogin(!isLogin)} style={{fontSize: '0.8125rem', opacity: 0.7}}>
               {isLogin ? "Don't have an account? Register" : "Already have an account? Login"}
             </button>
+            
+            {isLogin && (
+              <button onClick={() => setShowRequestModal(true)} style={{fontSize: '0.8125rem', color: '#ff4d4d', fontWeight: 600}}>
+                New User? Request Access
+              </button>
+            )}
           </footer>
         </div>
       </div>
+
+      {showRequestModal && (
+        <RequestAccessModal 
+          onClose={() => setShowRequestModal(false)} 
+          onSuccess={(msg) => setSuccess(msg)} 
+        />
+      )}
     </div>
   );
 }

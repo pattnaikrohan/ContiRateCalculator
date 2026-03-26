@@ -37,8 +37,7 @@ function CalculatorApp({ token, userEmail, onLogout }) {
     reels: 1,
     dimL: '',
     dimW: '',
-    dimH: '',
-    gst: false
+    dimH: ''
   });
 
   const [cbmDisplay, setCbmDisplay] = useState(null);
@@ -221,13 +220,6 @@ function CalculatorApp({ token, userEmail, onLogout }) {
                 )}
               </div>
             )}
-
-            <div className="section-divider"></div>
-            
-            <label className="checkbox-wrap">
-              <input type="checkbox" name="gst" checked={formData.gst} onChange={handleChange} />
-              <span className="checkbox-label">Include 10% statutory GST in total</span>
-            </label>
 
           </div>
         </section>

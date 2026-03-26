@@ -733,3 +733,72 @@ select:disabled {
   color: #15803d;
   background: rgba(34, 197, 94, 0.05);
 }
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.modal-content {
+  position: relative;
+  animation: modalPop 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes modalPop {
+  from { opacity: 0; transform: scale(0.9) translateY(20px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* Generic Buttons */
+.primary-btn {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 1rem 1.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.secondary-btn {
+  background: var(--input-bg);
+  color: var(--text-main);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  padding: 1rem 1.75rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.primary-btn:hover { filter: brightness(1.1); transform: translateY(-1px); }
+.secondary-btn:hover { background: var(--input-focus-bg); }
+.primary-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* Modal Input Styles */
+.modal-content textarea {
+  width: 100%;
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
+  color: var(--input-text);
+  font-family: inherit;
+  font-size: 0.875rem;
+  outline: none;
+  transition: all 0.3s;
+}
+
+.modal-content textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px var(--input-focus-ring);
+}

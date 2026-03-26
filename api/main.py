@@ -26,14 +26,7 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 480 # 8 hours
 # Power Automate Flow URLs (Dataverse Proxies)
 FLOW_SIGNUP = "https://default9a3bb30112fd4106a7f7563f72cfdf.69.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/85d7f9c94a864cb793c1e9a3eef7b508/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=9OwdeE78IFsCXJ6aK-gNv-nYg8Tqb0gUxfKWc0w3H_Q"
 FLOW_LOGIN = "https://default9a3bb30112fd4106a7f7563f72cfdf.69.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/6eeada90d2be4980a5254f8b84df358e/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=QcT-rQudcSFwt4oUD76mNshh9-VRtlYvSMMwIq-748I"
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=False,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+FLOW_REQUEST_ACCESS = "https://prod-23.australiasoutheast.logic.azure.com:443/workflows/placeholder-to-be-updated" # Placeholder
 
 # Authentication Models
 class UserRegister(BaseModel):
@@ -43,6 +36,12 @@ class UserRegister(BaseModel):
 class UserLogin(BaseModel):
     email: str
     password: str
+
+class AccessRequest(BaseModel):
+    name: str
+    email: str
+    company: str
+    message: str
 
 # Helper Functions
 def create_access_token(data: dict):
@@ -172,6 +171,33 @@ def find_row(w: float) -> dict:
         if isinstance(weight_val, (int, float)) and float(weight_val) >= w:
             return r
     return TARIFF[-1]
+@app.post("/api/auth/request-access")
+def request_access(req: AccessRequest):
+    try:
+        # Send to Power Automate
+        payload = {
+            "name": req.name,
+            "email": req.email,
+            "company": req.company,
+            "message": req.message,
+            "timestamp": datetime.utcnow().isoformat()
+        }
+        print(f"DEBUG: Calling Request Access Flow for {req.email}")
+        # In a real scenario, this would call FLOW_REQUEST_ACCESS
+        # For now, we'll log it and return success if the URL is a placeholder
+        if "placeholder" in FLOW_REQUEST_ACCESS:
+             print("DEBUG: Using placeholder flow - request logged successfully")
+             return {"message": "Request sent successfully (Logged)"}
+             
+        response = requests.post(FLOW_REQUEST_ACCESS, json=payload, timeout=10)
+        if response.status_code not in [200, 201, 202]:
+            raise HTTPException(status_code=400, detail="Failed to send request")
+            
+        return {"message": "Request sent successfully"}
+    except Exception as e:
+        print(f"DEBUG Error in request_access: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Request error: {str(e)}")
+
 
 class CalcRequest(BaseModel):
     origin: str
@@ -181,7 +207,6 @@ class CalcRequest(BaseModel):
     dimL: str = ""
     dimW: str = ""
     dimH: str = ""
-    gst: bool = False
 
 @app.post("/api/calculate")
 def calculate_rate(req: CalcRequest, email: Optional[str] = Depends(get_current_user)):
@@ -272,11 +297,6 @@ def calculate_rate(req: CalcRequest, email: Optional[str] = Depends(get_current_
             port_fee = 50.0 * num_reels
             lines.append({"label": "Port booking fee ($50 per reel)", "value": float(port_fee)})
             total += port_fee
-
-        if req.gst:
-            gst_amt = total * 0.10
-            lines.append({"label": "GST (10%)", "value": float(gst_amt)})
-            total += gst_amt
 
         return {
             "success": True,
