@@ -47,12 +47,12 @@ function RequestAccessModal({ onClose, onSuccess }) {
             <input type="email" required value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} />
           </div>
           <div className="form-group">
-            <label>Company</label>
-            <input type="text" required value={formData.company} onChange={e => setFormData({...formData, company: e.target.value})} />
+            <label>Company (Optional)</label>
+            <input type="text" value={formData.company} onChange={e => setFormData({...formData, company: e.target.value})} />
           </div>
           <div className="form-group">
-            <label>Additional Info</label>
-            <textarea placeholder="Optional context..." value={formData.message} onChange={e => setFormData({...formData, message: e.target.value})} style={{minHeight: '80px', borderRadius: '8px', padding: '0.75rem'}} />
+            <label>Additional Info (Optional)</label>
+            <textarea placeholder="e.g. Industry, Role..." value={formData.message} onChange={e => setFormData({...formData, message: e.target.value})} style={{minHeight: '80px', borderRadius: '8px', padding: '0.75rem'}} />
           </div>
 
           {error && <div className="auth-error" style={{margin: '0.5rem 0'}}>{error}</div>}

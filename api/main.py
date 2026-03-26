@@ -37,8 +37,8 @@ class UserLogin(BaseModel):
 class AccessRequest(BaseModel):
     name: str
     email: str
-    company: str
-    message: str
+    company: Optional[str] = ""
+    message: Optional[str] = ""
 
 # Helper Functions
 def create_access_token(data: dict):
