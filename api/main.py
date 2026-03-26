@@ -23,16 +23,13 @@ SECRET_KEY = "conti-rate-calculator-secret-key-12345"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 480 # 8 hours
 
-# Power Automate Flow URLs (Dataverse Proxies)
+# Power Automate Flow URLs 
 FLOW_SIGNUP = "https://default9a3bb30112fd4106a7f7563f72cfdf.69.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/85d7f9c94a864cb793c1e9a3eef7b508/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=9OwdeE78IFsCXJ6aK-gNv-nYg8Tqb0gUxfKWc0w3H_Q"
 FLOW_LOGIN = "https://default9a3bb30112fd4106a7f7563f72cfdf.69.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/6eeada90d2be4980a5254f8b84df358e/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=QcT-rQudcSFwt4oUD76mNshh9-VRtlYvSMMwIq-748I"
-FLOW_REQUEST_ACCESS = "https://prod-23.australiasoutheast.logic.azure.com:443/workflows/placeholder-to-be-updated" # Placeholder
+FLOW_REQUEST_ACCESS = FLOW_SIGNUP
 
 # Authentication Models
-class UserRegister(BaseModel):
-    email: str
-    password: str
-
+# Authentication Models
 class UserLogin(BaseModel):
     email: str
     password: str
@@ -64,48 +61,7 @@ def get_current_user(authorization: str = Header(None)):
         return payload.get("sub")
     except Exception:
         raise HTTPException(status_code=401, detail="Invalid token")
-
 # Auth Endpoints
-@app.post("/api/auth/register")
-def register(user: UserRegister):
-    # FIRST: Check if user already exists using the Login/Lookup flow
-    try:
-        check_payload = {"email": user.email}
-        print(f"DEBUG: Checking existence for {user.email}")
-        check_res = requests.post(FLOW_LOGIN, json=check_payload, timeout=10)
-        
-        # If Login flow finds the user (200 OK), then they are already registered
-        if check_res.status_code == 200:
-            data = check_res.json()
-            user_found = False
-            if "value" in data and isinstance(data["value"], list) and len(data["value"]) > 0:
-                user_found = True
-            elif "email" in data and data["email"] == user.email:
-                user_found = True
-            
-            if user_found:
-                print("DEBUG: User already exists")
-                raise HTTPException(status_code=400, detail="Email already registered")
-
-        # SECOND: If not found (often 401 or 200 with empty list), proceed to register
-        payload = {
-            "email": user.email,
-            "password": user.password
-        }
-        print(f"DEBUG: Calling Signup Flow for {user.email}")
-        response = requests.post(FLOW_SIGNUP, json=payload, timeout=10)
-        print(f"DEBUG: Signup Flow Response: {response.status_code}")
-        
-        if response.status_code not in [200, 201, 202]:
-            raise HTTPException(status_code=400, detail="Registration failed at Dataverse")
-            
-        return {"message": "User registered successfully"}
-    except HTTPException as he:
-        raise he
-    except Exception as e:
-        print(f"DEBUG Error in register: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"External Service Error: {str(e)}")
-
 @app.post("/api/auth/login")
 def login(user: UserLogin):
     # Call Power Automate Login Flow with BOTH email and password

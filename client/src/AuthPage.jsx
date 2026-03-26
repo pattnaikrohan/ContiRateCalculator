@@ -70,7 +70,6 @@ function RequestAccessModal({ onClose, onSuccess }) {
 }
 
 function AuthPage({ onLogin }) {
-  const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -84,9 +83,9 @@ function AuthPage({ onLogin }) {
     setSuccess('');
     setLoading(true);
 
-    const endpoint = isLogin ? '/api/auth/login' : '/api/auth/register';
-    
+    const endpoint = '/api/auth/login';
     const apiUrl = import.meta.env.VITE_API_URL || '';
+    
     try {
       const response = await fetch(`${apiUrl}${endpoint}`, {
         method: 'POST',
@@ -100,14 +99,7 @@ function AuthPage({ onLogin }) {
         throw new Error(data.detail || 'Authentication failed');
       }
 
-      if (isLogin) {
-        onLogin(data.access_token, data.email);
-      } else {
-        setIsLogin(true);
-        setSuccess('Account created! Please sign in.');
-        setEmail('');
-        setPassword('');
-      }
+      onLogin(data.access_token, data.email);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -129,8 +121,8 @@ function AuthPage({ onLogin }) {
 
         <div className="glass-panel auth-card">
           <div className="auth-header" style={{marginBottom: '1.5rem'}}>
-            <h2 style={{fontSize: '1.5rem'}}>{isLogin ? 'Login' : 'Register'}</h2>
-            <p style={{fontSize: '0.8125rem'}}>{isLogin ? 'Access your rate calculator' : 'Create a new operator account'}</p>
+            <h2 style={{fontSize: '1.5rem'}}>Login</h2>
+            <p style={{fontSize: '0.8125rem'}}>Access your rate calculator</p>
           </div>
 
           <form onSubmit={handleSubmit} className="form-section" style={{gap: '1rem'}}>
@@ -161,20 +153,14 @@ function AuthPage({ onLogin }) {
             {success && <div className="auth-success fade-in" style={{margin: '0.5rem 0', padding: '0.5rem'}}>{success}</div>}
 
             <button type="submit" className="primary-btn auth-btn" disabled={loading} style={{padding: '0.875rem', marginTop: '0.5rem'}}>
-              {loading ? 'Processing...' : (isLogin ? 'Login' : 'Register')}
+              {loading ? 'Processing...' : 'Login'}
             </button>
           </form>
 
           <footer className="auth-footer" style={{marginTop: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.75rem', alignItems: 'center'}}>
-            <button onClick={() => setIsLogin(!isLogin)} style={{fontSize: '0.8125rem', opacity: 0.7}}>
-              {isLogin ? "Don't have an account? Register" : "Already have an account? Login"}
+            <button onClick={() => setShowRequestModal(true)} style={{fontSize: '0.8125rem', color: '#ff4d4d', fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer'}}>
+              New User? Request Access
             </button>
-            
-            {isLogin && (
-              <button onClick={() => setShowRequestModal(true)} style={{fontSize: '0.8125rem', color: '#ff4d4d', fontWeight: 600}}>
-                New User? Request Access
-              </button>
-            )}
           </footer>
         </div>
       </div>
