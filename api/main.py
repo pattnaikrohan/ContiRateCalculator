@@ -120,6 +120,14 @@ MINE_KEYS = {'mtwhaleback':'mw','jimblebar':'ji','southflank':'sf','christmascre
 PERTH_METRO = {'hazelmere':'hz','bullsbrook':'bs','boddington':'bd'}
 FUEL_SURCHARGE = 0.38
 
+@app.get("/api/tariff")
+def get_tariff():
+    return {
+        "tariff": TARIFF,
+        "mine_keys": MINE_KEYS,
+        "perth_metro": PERTH_METRO
+    }
+
 def find_row(w: float) -> dict:
     # Explicitly cast to ensure type safety for linter
     for r in TARIFF:

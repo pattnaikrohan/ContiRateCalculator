@@ -165,11 +165,9 @@ body {
   transition: filter 0.5s;
 }
 
-/* Enhanced visibility for login logo on dark background */
+/* Enhanced visibility for login logo on dark background without affecting size */
 .login-container .brand-logo {
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, transparent 80%);
-  padding: 1rem 1.5rem;
-  border-radius: 2rem;
+  filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.4));
 }
 
 .brand-section h1 {

@@ -28,8 +28,82 @@ function fmt(n) {
   return '$' + Math.round(n).toLocaleString('en-AU');
 }
 
+function TariffModal({ onClose }) {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const apiUrl = import.meta.env.VITE_API_URL || '';
+    fetch(`${apiUrl}/api/tariff`)
+      .then(res => res.json())
+      .then(d => {
+        setData(d);
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
+  }, []);
+
+  return (
+    <div className="modal-overlay" style={{ zIndex: 2000 }}>
+      <div className="glass-panel modal-content fade-in" style={{ maxWidth: '1100px', width: '95%', maxHeight: '90vh', overflowY: 'auto' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+          <h2 style={{ margin: 0 }}>Full Pricing Schedule (2026)</h2>
+          <button onClick={onClose} className="secondary-btn" style={{ padding: '0.5rem 1rem' }}>Close</button>
+        </div>
+
+        {loading ? (
+          <div className="state-container"><div className="loader"></div></div>
+        ) : data ? (
+          <div className="tariff-container">
+            <div style={{ overflowX: 'auto', marginBottom: '2rem' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.75rem', minWidth: '800px' }}>
+                <thead>
+                  <tr style={{ borderBottom: '1px solid var(--glass-border)', textAlign: 'left', background: 'var(--glass-bg)' }}>
+                    <th style={{ padding: '0.75rem' }}>Weight (T)</th>
+                    <th style={{ padding: '0.75rem' }}>Mel Cart</th>
+                    <th style={{ padding: '0.75rem' }}>S/F Rate</th>
+                    {Object.keys(data.mine_keys).map(k => (
+                      <th key={k} style={{ padding: '0.75rem', textTransform: 'capitalize' }}>{k.replace('mtwhaleback','Mt Whlbk').replace('christmascreek','Xmas Crk').replace('andersonpoint','And. Pt')}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.tariff.map((row, i) => (
+                    <tr key={i} style={{ borderBottom: '1px solid var(--glass-border)' }}>
+                      <td style={{ padding: '0.5rem 0.75rem', fontWeight: 600 }}>{row.w}</td>
+                      <td style={{ padding: '0.5rem 0.75rem' }}>{fmt(row.melCart)}</td>
+                      <td style={{ padding: '0.5rem 0.75rem' }}>${row.combined}</td>
+                      {Object.keys(data.mine_keys).map(k => (
+                        <td key={k} style={{ padding: '0.5rem 0.75rem' }}>{fmt(row.mineRates[data.mine_keys[k]])}</td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            <div className="section-divider"></div>
+            <h3 style={{ margin: '1.5rem 0 1rem' }}>TERMS & CONDITIONS</h3>
+            <div style={{ fontSize: '0.8125rem', opacity: 0.8, lineHeight: 1.6 }}>
+                <p>• Seafreight calculated on FRT basis — weight (T) or CBM whichever is greater.</p>
+                <p>• Melbourne crane cost ($1,975) applied for reels &gt; 30T.</p>
+                <p>• Fremantle crane ($500-700) applied to all Perth deliveries.</p>
+                <p>• 38% Fuel Surcharge applied to all transport rates.</p>
+                <p>• Pilot vehicles ($400) and Western Power permits ($400) applied where applicable.</p>
+                <p>• All work performed under AAW Global Logistics Pty Ltd standard conditions.</p>
+            </div>
+          </div>
+        ) : (
+          <p>Unable to retrieve pricing data at this time.</p>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function CalculatorApp({ token, userEmail, onLogout }) {
   const [theme, setTheme] = useState('dark');
+  const [showTariff, setShowTariff] = useState(false);
   const [formData, setFormData] = useState({
     origin: 'melbourne',
     dest: '',
@@ -283,6 +357,13 @@ function CalculatorApp({ token, userEmail, onLogout }) {
 
       </main>
 
+      <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '-0.5rem', marginBottom: '0.5rem' }}>
+        <button onClick={() => setShowTariff(true)} className="secondary-btn" style={{ padding: '0.625rem 1.25rem', fontSize: '0.8125rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '14px', height: '14px' }}><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+            Full Tariff Schedule
+        </button>
+      </div>
+
       {result && (
         <section className="terms-section glass-panel fade-in">
           <h3 className="terms-title">TERMS & CONDITIONS</h3>
@@ -302,6 +383,8 @@ function CalculatorApp({ token, userEmail, onLogout }) {
           </ul>
         </section>
       )}
+
+      {showTariff && <TariffModal onClose={() => setShowTariff(false)} />}
     </div>
   );
 }
