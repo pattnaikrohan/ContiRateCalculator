@@ -2,7 +2,7 @@ import { useState } from 'react';
 import logo from './assets/aaw1.svg';
 
 function RequestAccessModal({ onClose, onSuccess }) {
-  const [formData, setFormData] = useState({ name: '', email: '', company: '', message: '' });
+  const [formData, setFormData] = useState({ firstName: '', lastName: '', email: '' });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -13,10 +13,14 @@ function RequestAccessModal({ onClose, onSuccess }) {
 
     const apiUrl = import.meta.env.VITE_API_URL || '';
     try {
+      const payload = {
+        name: `${formData.firstName} ${formData.lastName}`.trim(),
+        email: formData.email
+      };
       const response = await fetch(`${apiUrl}/api/auth/request-access`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(payload)
       });
 
       const data = await response.json();
@@ -38,21 +42,19 @@ function RequestAccessModal({ onClose, onSuccess }) {
         <p style={{ fontSize: '0.8125rem', marginBottom: '1.5rem', opacity: 0.8 }}>Submit your details to request an account.</p>
 
         <form onSubmit={handleSubmit} className="form-section" style={{ gap: '1rem' }}>
-          <div className="form-group">
-            <label>Full Name</label>
-            <input type="text" required value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} />
+          <div style={{ display: 'flex', gap: '1rem' }}>
+            <div className="form-group" style={{ flex: 1 }}>
+              <label>First Name</label>
+              <input type="text" required value={formData.firstName} onChange={e => setFormData({ ...formData, firstName: e.target.value })} />
+            </div>
+            <div className="form-group" style={{ flex: 1 }}>
+              <label>Last Name</label>
+              <input type="text" required value={formData.lastName} onChange={e => setFormData({ ...formData, lastName: e.target.value })} />
+            </div>
           </div>
           <div className="form-group">
             <label>Work Email</label>
             <input type="email" required value={formData.email} onChange={e => setFormData({ ...formData, email: e.target.value })} />
-          </div>
-          <div className="form-group">
-            <label>Company (Optional)</label>
-            <input type="text" value={formData.company} onChange={e => setFormData({ ...formData, company: e.target.value })} />
-          </div>
-          <div className="form-group">
-            <label>Additional Info (Optional)</label>
-            <textarea placeholder="e.g. Industry, Role..." value={formData.message} onChange={e => setFormData({ ...formData, message: e.target.value })} style={{ minHeight: '80px', borderRadius: '8px', padding: '0.75rem' }} />
           </div>
 
           {error && <div className="auth-error" style={{ margin: '0.5rem 0' }}>{error}</div>}
@@ -72,6 +74,7 @@ function RequestAccessModal({ onClose, onSuccess }) {
 function AuthPage({ onLogin }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
@@ -122,7 +125,6 @@ function AuthPage({ onLogin }) {
         <div className="glass-panel auth-card">
           <div className="auth-header" style={{ marginBottom: '1.5rem' }}>
             <h2 style={{ fontSize: '1.5rem' }}>Login</h2>
-            <p style={{ fontSize: '0.8125rem' }}>Access your rate calculator</p>
           </div>
 
           <form onSubmit={handleSubmit} className="form-section" style={{ gap: '1rem' }}>
@@ -139,14 +141,34 @@ function AuthPage({ onLogin }) {
             </div>
             <div className="form-group">
               <label style={{ fontSize: '0.8125rem' }}>Password</label>
-              <input
-                type="password"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                style={{ padding: '0.75rem' }}
-              />
+              <div style={{ position: 'relative' }}>
+                <input
+                  type={showPassword ? "text" : "password"}
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  style={{ padding: '0.75rem', width: '100%' }}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  style={{
+                    position: 'absolute',
+                    right: '12px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    background: 'none',
+                    border: 'none',
+                    color: 'var(--text-muted)',
+                    cursor: 'pointer',
+                    fontSize: '0.75rem',
+                    fontWeight: 600
+                  }}
+                >
+                  {showPassword ? 'HIDE' : 'SHOW'}
+                </button>
+              </div>
             </div>
 
             {error && <div className="auth-error fade-in" style={{ margin: '0.5rem 0', padding: '0.5rem' }}>{error}</div>}

@@ -6,7 +6,7 @@ import './index.css';
 const ORIGIN = "Continental - Bayswater, VIC";
 const DESTINATIONS = [
   { value: "", label: "— Select Destination —" },
-  { value: "seafreight", label: "Perth (Sea Freight only)" },
+  { value: "seafreight", label: "Perth" },
   { value: "hazelmere", label: "Perth Metro – Hazelmere / Kenwick / Welshpool" },
   { value: "bullsbrook", label: "Perth Metro – Bullsbrook" },
   { value: "boddington", label: "Perth Metro – Boddington / Huntley" },
@@ -166,7 +166,7 @@ function CalculatorApp({ token, userEmail, onLogout }) {
             
             <div className="input-row">
               <div className="form-group">
-                <label>Origin Terminal</label>
+                <label>Origin Location</label>
                 <select name="origin" value={formData.origin} onChange={handleChange} disabled>
                   <option value="melbourne">{ORIGIN}</option>
                 </select>
@@ -267,7 +267,7 @@ function CalculatorApp({ token, userEmail, onLogout }) {
                 </div>
 
                 <div className="total-wrapper">
-                  <span className="total-title">Total Output</span>
+                  <span className="total-title">Freight Estimate excl GST</span>
                   <span className="total-amount">{fmt(result.total)}</span>
                 </div>
 

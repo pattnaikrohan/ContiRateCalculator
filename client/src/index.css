@@ -162,11 +162,7 @@ body {
 .brand-logo {
   height: 48px;
   width: auto;
-  filter: invert(1) hue-rotate(180deg) brightness(0.8);
   transition: filter 0.5s;
-}
-[data-theme='light'] .brand-logo {
-  filter: brightness(0.8);
 }
 
 .brand-section h1 {
