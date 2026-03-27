@@ -28,7 +28,15 @@ export const TARIFF = [
 
 export const MINE_KEYS = {mtwhaleback:'mw',jimblebar:'ji',southflank:'sf',christmascreek:'cc',tomprice:'tp',westangeles:'wa',yandi:'ya',cloudbreak:'cl',eliwana:'el',areac:'ac',andersonpoint:'ap',solomon:'so'};
 export const PERTH_METRO = {hazelmere:'hz',bullsbrook:'bs',boddington:'bd'};
-export const FUEL_SURCHARGE = 0.38;
+
+export const DEST_FUEL_SURCHARGE   = 0.43;
+export const ORIGIN_FUEL_SURCHARGE = 0.18;
+export const GST_RATE              = 0.10;
+export const WP_PERMIT_PER_REEL    = 400;
+export const PORT_FEE_PER_REEL     = 50;
+export const CRANE_MEL_PER_REEL    = 1975;
+export const FREM_CRANE_LIGHT      = 500;
+export const FREM_CRANE_HEAVY      = 700;
 
 export function findRow(w) { 
   for (const r of TARIFF) { 

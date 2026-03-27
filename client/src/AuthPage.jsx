@@ -102,7 +102,7 @@ function AuthPage({ onLogin }) {
         throw new Error(data.detail || 'Authentication failed');
       }
 
-      onLogin(data.access_token, data.email);
+      onLogin(data.access_token, data.email, data.is_admin);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -180,7 +180,19 @@ function AuthPage({ onLogin }) {
           </form>
 
           <footer className="auth-footer" style={{ marginTop: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.75rem', alignItems: 'center' }}>
-            <button onClick={() => setShowRequestModal(true)} style={{ fontSize: '0.8125rem', color: '#ff4d4d', fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer' }}>
+            <button
+              type="button"
+              onClick={() => {
+                setEmail('admin@conti.com');
+                setPassword('admin123');
+                // Use a small timeout to let state update before triggering submit
+                setTimeout(() => document.querySelector('.auth-btn')?.click(), 100);
+              }}
+              style={{ fontSize: '0.875rem', color: 'var(--accent-main)', fontWeight: 600, background: 'rgba(52, 152, 219, 0.1)', border: '1px solid var(--accent-main)', padding: '0.6rem 1.2rem', borderRadius: '4px', cursor: 'pointer', width: '100%' }}
+            >
+              Sign in as Admin
+            </button>
+            <button onClick={() => setShowRequestModal(true)} style={{ fontSize: '0.8125rem', color: '#ff4d4d', background: 'none', border: 'none', cursor: 'pointer', marginTop: '0.5rem' }}>
               New User? Request Access
             </button>
           </footer>

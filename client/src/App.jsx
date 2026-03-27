@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import logo from './assets/aaw1.svg';
 import AuthPage from './AuthPage';
+import AdminPage from './AdminPage';
 import './index.css';
 
 const ORIGIN = "Continental - Bayswater, VIC";
@@ -86,10 +87,10 @@ function TariffModal({ onClose }) {
             <h3 style={{ margin: '1.5rem 0 1rem' }}>TERMS & CONDITIONS</h3>
             <div style={{ fontSize: '0.8125rem', opacity: 0.8, lineHeight: 1.6 }}>
                 <p>• Seafreight calculated on FRT basis — weight (T) or CBM whichever is greater.</p>
-                <p>• Melbourne crane cost ($1,975) applied for reels &gt; 30T.</p>
-                <p>• Fremantle crane ($500-700) applied to all Perth deliveries.</p>
-                <p>• 38% Fuel Surcharge applied to all transport rates.</p>
-                <p>• Pilot vehicles ($400) and Western Power permits ($400) applied where applicable.</p>
+                <p>• Melbourne crane cost ({fmt(data.constants?.CRANE_MEL_PER_REEL || 1975)}) applied for reels &gt; 30T.</p>
+                <p>• Fremantle crane ({fmt(data.constants?.FREM_CRANE_LIGHT || 500)}-{fmt(data.constants?.FREM_CRANE_HEAVY || 700)}) applied to all Perth deliveries.</p>
+                <p>• {(data.constants?.DEST_FUEL_SURCHARGE * 100).toFixed(0)}% Fuel Surcharge applied to all transport rates.</p>
+                <p>• Pilot vehicles ($400) and Western Power permits ({fmt(data.constants?.WP_PERMIT_PER_REEL || 400)}) applied where applicable.</p>
                 <p>• All work performed under AAW Global Logistics Pty Ltd standard conditions.</p>
             </div>
           </div>
@@ -101,7 +102,7 @@ function TariffModal({ onClose }) {
   );
 }
 
-function CalculatorApp({ token, userEmail, onLogout }) {
+function CalculatorApp({ token, userEmail, isAdmin, onLogout, onAdminClick }) {
   const [theme, setTheme] = useState('dark');
   const [showTariff, setShowTariff] = useState(false);
   const [formData, setFormData] = useState({
@@ -372,9 +373,9 @@ function CalculatorApp({ token, userEmail, onLogout }) {
             <li>Seafreight rates subject to fluctuation in BAF, coastal surcharge & local charges. Offer basis 2 units per Mafi trailer. Subject to available equipment and vessel schedule.</li>
             <li className={result?.crane_applies ? "terms-highlight" : ""}>Melbourne crane cost is an average assumption of $1,975 per reel for reels over 30T. Actual cost determined by terminal operator. Melbourne has fork capacity to approx. 31T subject to reel dimensions.</li>
             <li>Fremantle crane subject to availability. If unavailable, a mobile crane will be required at cost + 10%. Crane rates reviewed by terminal operator 30 June or as required. Basis vessel discharge at Berth 11 & 12.</li>
-            <li>Destination transport rates are base rates ex Fremantle Port. A 38% fuel surcharge is applied on top and reviewed monthly.</li>
-            <li className={result?.wp_applies ? "terms-highlight" : ""}>Western Power permit ($400 per reel) applicable for reels above 360 cm in height. Applied as a mandatory charge.</li>
-            <li>Port booking fee of $50 per reel applies to all Perth metro and mine site deliveries.</li>
+            <li>Destination transport rates are base rates ex Fremantle Port. A {(result?.lines?.find(l => l.label.includes('Destination fuel'))?.label.match(/\d+%/)?.[0]) || '38%'} fuel surcharge is applied on top and reviewed monthly.</li>
+            <li className={result?.wp_applies ? "terms-highlight" : ""}>Western Power permit applicable for reels above 360 cm in height. Applied as a mandatory charge.</li>
+            <li>Port booking fee applies to all Perth metro and mine site deliveries.</li>
             <li className={result?.pilot_applies ? "terms-highlight" : ""}>Pilot vehicles apply at $400 per reel for movements between 0100–0600hrs on reels 34T–52T.</li>
             <li className="terms-highlight">Mine site deliveries allow 5hrs across port & mine site. Time starts from gate entry. Demurrage rate: {result ? fmt(result.demurr) : '$320'}/hr after free time allowance.</li>
             <li>Transport trailers subject to availability. Max loaded height ex Fremantle is 5.8m (incl. 1m for trailer).</li>
@@ -392,26 +393,44 @@ function CalculatorApp({ token, userEmail, onLogout }) {
 function App() {
     const [token, setToken] = useState(localStorage.getItem('token'));
     const [userEmail, setUserEmail] = useState(localStorage.getItem('userEmail'));
+    const [isAdmin, setIsAdmin] = useState(localStorage.getItem('isAdmin') === 'true');
+    const [page, setPage] = useState('calculator');
 
-    const handleLogin = (newToken, email) => {
+    const handleLogin = (newToken, email, adminFlag) => {
         setToken(newToken);
         setUserEmail(email);
+        setIsAdmin(adminFlag);
+        if (adminFlag) setPage('admin');
         localStorage.setItem('token', newToken);
         localStorage.setItem('userEmail', email);
+        localStorage.setItem('isAdmin', adminFlag ? 'true' : 'false');
     };
 
     const handleLogout = () => {
         setToken(null);
         setUserEmail(null);
+        setIsAdmin(false);
+        setPage('calculator');
         localStorage.removeItem('token');
         localStorage.removeItem('userEmail');
+        localStorage.removeItem('isAdmin');
     };
 
     if (!token) {
         return <AuthPage onLogin={handleLogin} />;
     }
 
-    return <CalculatorApp token={token} userEmail={userEmail} onLogout={handleLogout} />;
+    if (page === 'admin' && isAdmin) {
+        return <AdminPage token={token} onBack={() => setPage('calculator')} />;
+    }
+
+    return <CalculatorApp 
+      token={token} 
+      userEmail={userEmail} 
+      isAdmin={isAdmin} 
+      onLogout={handleLogout} 
+      onAdminClick={() => setPage('admin')} 
+    />;
 }
 
 export default App;
