@@ -35,8 +35,49 @@ ADMIN_EMAILS = os.environ.get("ADMIN_EMAILS", "").split(",")
 # Tariff File Path
 TARIFF_FILE = os.path.join(os.path.dirname(__file__), "../server/data/tariffData.js")
 
-_tariff_config = {}   # surcharge constants
-_tariff_table  = []   # weight bracket rows
+# Hardcoded defaults — used when tariffData.js cannot be found (e.g. on Azure)
+DEFAULT_TARIFF_CONFIG = {
+    "DEST_FUEL_SURCHARGE":   0.43,
+    "ORIGIN_FUEL_SURCHARGE": 0.18,
+    "CRANE_MEL_PER_REEL":    1975.0,
+    "FREM_CRANE_LIGHT":      500.0,
+    "FREM_CRANE_HEAVY":      700.0,
+    "PORT_FEE_PER_REEL":     50.0,
+    "WP_PERMIT_PER_REEL":    400.0,
+    "GST_RATE":              0.10,
+}
+
+DEFAULT_TARIFF_TABLE = [
+  {"w":3.0,  "melCart":1050,"combined":148.86,"demurr":195,"mineRates":{"hz":975,"bs":1365,"bd":1755,"mw":9930,"ji":10230,"sf":9780,"cc":11080,"tp":11580,"wa":10230,"ya":9780,"cl":11080,"el":12380,"ac":9780,"ap":12280,"so":10785}},
+  {"w":5.0,  "melCart":1050,"combined":148.86,"demurr":195,"mineRates":{"hz":975,"bs":1365,"bd":1755,"mw":9930,"ji":10230,"sf":9780,"cc":11080,"tp":11580,"wa":10230,"ya":9780,"cl":11080,"el":12380,"ac":9780,"ap":12280,"so":10785}},
+  {"w":7.0,  "melCart":1050,"combined":148.86,"demurr":195,"mineRates":{"hz":975,"bs":1365,"bd":1755,"mw":9930,"ji":10230,"sf":9780,"cc":11080,"tp":11580,"wa":10230,"ya":9780,"cl":11080,"el":12380,"ac":9780,"ap":12280,"so":10785}},
+  {"w":10.0, "melCart":1050,"combined":148.86,"demurr":195,"mineRates":{"hz":975,"bs":1365,"bd":1755,"mw":9930,"ji":10230,"sf":9780,"cc":11080,"tp":11580,"wa":10230,"ya":9780,"cl":11080,"el":12380,"ac":9780,"ap":12280,"so":10785}},
+  {"w":15.0, "melCart":1150,"combined":148.86,"demurr":195,"mineRates":{"hz":975,"bs":1365,"bd":1755,"mw":9930,"ji":10230,"sf":9780,"cc":11080,"tp":11580,"wa":10230,"ya":9780,"cl":11080,"el":12380,"ac":9780,"ap":12280,"so":10785}},
+  {"w":17.0, "melCart":1150,"combined":148.86,"demurr":195,"mineRates":{"hz":975,"bs":1365,"bd":1755,"mw":9930,"ji":10230,"sf":9780,"cc":11080,"tp":11580,"wa":10230,"ya":9780,"cl":11080,"el":12380,"ac":9780,"ap":12280,"so":10785}},
+  {"w":18.0, "melCart":1150,"combined":148.86,"demurr":195,"mineRates":{"hz":975,"bs":1365,"bd":1755,"mw":9930,"ji":10230,"sf":9780,"cc":11080,"tp":11580,"wa":10230,"ya":9780,"cl":11080,"el":12380,"ac":9780,"ap":12280,"so":10785}},
+  {"w":20.0, "melCart":1150,"combined":131.86,"demurr":195,"mineRates":{"hz":975,"bs":1365,"bd":1755,"mw":9930,"ji":10230,"sf":9780,"cc":11080,"tp":11580,"wa":10230,"ya":9780,"cl":11080,"el":12380,"ac":9780,"ap":12280,"so":10785}},
+  {"w":22.0, "melCart":1150,"combined":131.86,"demurr":195,"mineRates":{"hz":975,"bs":1365,"bd":1755,"mw":9930,"ji":10230,"sf":9780,"cc":11080,"tp":11580,"wa":10230,"ya":9780,"cl":11080,"el":12380,"ac":9780,"ap":12280,"so":10785}},
+  {"w":24.0, "melCart":1300,"combined":131.86,"demurr":280,"mineRates":{"hz":1400,"bs":1960,"bd":2520,"mw":10270,"ji":10570,"sf":10120,"cc":11420,"tp":11920,"wa":10570,"ya":10120,"cl":11420,"el":12720,"ac":10120,"ap":12870,"so":11600}},
+  {"w":26.0, "melCart":1300,"combined":131.86,"demurr":280,"mineRates":{"hz":1400,"bs":1960,"bd":2520,"mw":10270,"ji":10570,"sf":10120,"cc":11420,"tp":11920,"wa":10570,"ya":10120,"cl":11420,"el":12720,"ac":10120,"ap":12870,"so":11600}},
+  {"w":28.0, "melCart":1300,"combined":131.86,"demurr":280,"mineRates":{"hz":1400,"bs":1960,"bd":2520,"mw":10270,"ji":10570,"sf":10120,"cc":11420,"tp":11920,"wa":10570,"ya":10120,"cl":11420,"el":12720,"ac":10120,"ap":12870,"so":11600}},
+  {"w":30.0, "melCart":1300,"combined":131.86,"demurr":280,"mineRates":{"hz":1400,"bs":1960,"bd":2520,"mw":10270,"ji":10570,"sf":10120,"cc":11420,"tp":11920,"wa":10570,"ya":10120,"cl":11420,"el":12720,"ac":10120,"ap":12870,"so":11600}},
+  {"w":32.0, "melCart":1300,"combined":131.86,"demurr":320,"mineRates":{"hz":1600,"bs":2240,"bd":2880,"mw":12680,"ji":11980,"sf":12680,"cc":12780,"tp":13480,"wa":12680,"ya":12880,"cl":12980,"el":14380,"ac":12680,"ap":14580,"so":14200}},
+  {"w":34.0, "melCart":1500,"combined":131.86,"demurr":320,"mineRates":{"hz":1600,"bs":2240,"bd":2880,"mw":12680,"ji":11980,"sf":12680,"cc":12780,"tp":13480,"wa":12680,"ya":12880,"cl":12980,"el":14380,"ac":12680,"ap":14580,"so":14200}},
+  {"w":36.0, "melCart":1500,"combined":131.86,"demurr":320,"mineRates":{"hz":1600,"bs":2240,"bd":2880,"mw":12680,"ji":11980,"sf":12680,"cc":12780,"tp":13480,"wa":12680,"ya":12880,"cl":12980,"el":14380,"ac":12680,"ap":14580,"so":14200}},
+  {"w":38.0, "melCart":1500,"combined":131.86,"demurr":320,"mineRates":{"hz":1600,"bs":2240,"bd":2880,"mw":12680,"ji":11980,"sf":12680,"cc":12780,"tp":13480,"wa":12680,"ya":12880,"cl":12980,"el":14380,"ac":12680,"ap":14580,"so":14200}},
+  {"w":41.0, "melCart":1500,"combined":131.86,"demurr":320,"mineRates":{"hz":1600,"bs":2240,"bd":2880,"mw":12680,"ji":11980,"sf":12680,"cc":12780,"tp":13480,"wa":12680,"ya":12880,"cl":12980,"el":14380,"ac":12680,"ap":14580,"so":14200}},
+  {"w":44.0, "melCart":1500,"combined":131.86,"demurr":320,"mineRates":{"hz":1600,"bs":2240,"bd":2880,"mw":12680,"ji":11980,"sf":12680,"cc":12780,"tp":13480,"wa":12680,"ya":12880,"cl":12980,"el":14380,"ac":12680,"ap":14580,"so":14200}},
+  {"w":46.0, "melCart":1950,"combined":131.86,"demurr":320,"mineRates":{"hz":1600,"bs":2240,"bd":2880,"mw":12680,"ji":11980,"sf":12680,"cc":12780,"tp":13480,"wa":12680,"ya":12880,"cl":12980,"el":14380,"ac":12680,"ap":14580,"so":14200}},
+  {"w":48.0, "melCart":1950,"combined":131.86,"demurr":350,"mineRates":{"hz":1750,"bs":2450,"bd":3150,"mw":12800,"ji":12100,"sf":12800,"cc":12900,"tp":13600,"wa":12800,"ya":13000,"cl":13100,"el":14500,"ac":12800,"ap":15700,"so":14200}},
+  {"w":50.0, "melCart":1950,"combined":131.86,"demurr":350,"mineRates":{"hz":1750,"bs":2450,"bd":3150,"mw":12800,"ji":12100,"sf":12800,"cc":12900,"tp":13600,"wa":12800,"ya":13000,"cl":13100,"el":14500,"ac":12800,"ap":15700,"so":16200}},
+  {"w":52.0, "melCart":1950,"combined":131.86,"demurr":400,"mineRates":{"hz":2000,"bs":2800,"bd":3600,"mw":14500,"ji":14500,"sf":15000,"cc":16200,"tp":16000,"wa":14500,"ya":14500,"cl":15750,"el":16000,"ac":15000,"ap":16500,"so":18500}},
+  {"w":57.0, "melCart":2300,"combined":131.86,"demurr":450,"mineRates":{"hz":2000,"bs":2800,"bd":3600,"mw":16000,"ji":16000,"sf":16500,"cc":17250,"tp":17500,"wa":16000,"ya":17500,"cl":17500,"el":20000,"ac":17000,"ap":20500,"so":18500}},
+  {"w":59.0, "melCart":2300,"combined":131.86,"demurr":450,"mineRates":{"hz":2000,"bs":2800,"bd":3600,"mw":16000,"ji":16000,"sf":16500,"cc":17250,"tp":17500,"wa":16000,"ya":17500,"cl":17500,"el":20000,"ac":17000,"ap":20500,"so":18500}},
+]
+
+# Start with defaults; override from JS file if available
+_tariff_config = dict(DEFAULT_TARIFF_CONFIG)
+_tariff_table  = list(DEFAULT_TARIFF_TABLE)
 
 def load_tariff_config():
     global _tariff_config, _tariff_table
@@ -48,19 +89,21 @@ def load_tariff_config():
         config = {}
         for match in re.finditer(r"export const (\w+)\s*=\s*([\d.]+);", content):
             config[match.group(1)] = float(match.group(2))
-        _tariff_config = config
+        if config:
+            _tariff_config = config
 
         # Load TARIFF array — extract the JS array and parse it as JSON
         arr_match = re.search(r"export const TARIFF\s*=\s*(\[.*?\]);", content, re.DOTALL)
         if arr_match:
-            # Convert JS object keys to quoted JSON keys
             js_arr = arr_match.group(1)
-            js_arr = re.sub(r'(\w+):', r'"\1":', js_arr)   # quote keys
-            js_arr = re.sub(r',\s*}', '}', js_arr)          # trailing commas
+            js_arr = re.sub(r'(\w+):', r'"\1":', js_arr)
+            js_arr = re.sub(r',\s*}', '}', js_arr)
             js_arr = re.sub(r',\s*]', ']', js_arr)
-            _tariff_table = json.loads(js_arr)
+            parsed = json.loads(js_arr)
+            if parsed:
+                _tariff_table = parsed
     except Exception as e:
-        print(f"Error loading tariff config: {e}")
+        print(f"tariffData.js not found or parse error: {e} — using hardcoded defaults")
 
 load_tariff_config()
 
