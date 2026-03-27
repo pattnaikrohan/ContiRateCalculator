@@ -10,6 +10,18 @@ const SURCHARGE_GROUPS = {
   'Tax': ['GST_RATE'],
 };
 
+// Fallback defaults — shown if the API returns empty constants
+const DEFAULT_CONSTANTS = {
+  DEST_FUEL_SURCHARGE:   0.43,
+  ORIGIN_FUEL_SURCHARGE: 0.18,
+  CRANE_MEL_PER_REEL:    1975,
+  FREM_CRANE_LIGHT:      500,
+  FREM_CRANE_HEAVY:      700,
+  PORT_FEE_PER_REEL:     50,
+  WP_PERMIT_PER_REEL:    400,
+  GST_RATE:              0.10,
+};
+
 /* ── component ── */
 function AdminPage({ token, onBack }) {
   const [activeTab, setActiveTab] = useState('surcharges');
@@ -34,11 +46,18 @@ function AdminPage({ token, onBack }) {
     })
       .then(r => { if (!r.ok) throw new Error('Failed to load config'); return r.json(); })
       .then(data => {
-        setConfig(data.constants);
-        setFormData(data.constants);
-        const copy = JSON.parse(JSON.stringify(data.tariff_table));
+        const constants = Object.keys(data.constants || {}).length > 0
+          ? data.constants
+          : DEFAULT_CONSTANTS;
+        setConfig(constants);
+        setFormData(constants);
+        const copy = JSON.parse(JSON.stringify(
+          (data.tariff_table && data.tariff_table.length > 0) ? data.tariff_table : []
+        ));
         setTableData(copy);
-        setPrevTable(JSON.parse(JSON.stringify(data.tariff_table)));
+        setPrevTable(JSON.parse(JSON.stringify(
+          (data.tariff_table && data.tariff_table.length > 0) ? data.tariff_table : []
+        )));
         setLoading(false);
       })
       .catch(err => { setError(err.message); setLoading(false); });
