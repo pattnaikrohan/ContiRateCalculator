@@ -64,7 +64,7 @@ function TariffModal({ onClose }) {
                     <th style={{ padding: '0.75rem' }}>Mel Cart</th>
                     <th style={{ padding: '0.75rem' }}>S/F Rate</th>
                     {Object.keys(data.mine_keys).map(k => (
-                      <th key={k} style={{ padding: '0.75rem', textTransform: 'capitalize' }}>{k.replace('mtwhaleback','Mt Whlbk').replace('christmascreek','Xmas Crk').replace('andersonpoint','And. Pt')}</th>
+                      <th key={k} style={{ padding: '0.75rem', textTransform: 'capitalize' }}>{k.replace('mtwhaleback', 'Mt Whlbk').replace('christmascreek', 'Xmas Crk').replace('andersonpoint', 'And. Pt')}</th>
                     ))}
                   </tr>
                 </thead>
@@ -86,12 +86,12 @@ function TariffModal({ onClose }) {
             <div className="section-divider"></div>
             <h3 style={{ margin: '1.5rem 0 1rem' }}>TERMS & CONDITIONS</h3>
             <div style={{ fontSize: '0.8125rem', opacity: 0.8, lineHeight: 1.6 }}>
-                <p>• Seafreight calculated on FRT basis — weight (T) or CBM whichever is greater.</p>
-                <p>• Melbourne crane cost ({fmt(data.constants?.CRANE_MEL_PER_REEL || 1975)}) applied for reels &gt; 30T.</p>
-                <p>• Fremantle crane ({fmt(data.constants?.FREM_CRANE_LIGHT || 500)}-{fmt(data.constants?.FREM_CRANE_HEAVY || 700)}) applied to all Perth deliveries.</p>
-                <p>• {(data.constants?.DEST_FUEL_SURCHARGE * 100).toFixed(0)}% Fuel Surcharge applied to all transport rates.</p>
-                <p>• Pilot vehicles ($400) and Western Power permits ({fmt(data.constants?.WP_PERMIT_PER_REEL || 400)}) applied where applicable.</p>
-                <p>• All work performed under AAW Global Logistics Pty Ltd standard conditions.</p>
+              <p>• Seafreight calculated on FRT basis — weight (T) or CBM whichever is greater.</p>
+              <p>• Melbourne crane cost ({fmt(data.constants?.CRANE_MEL_PER_REEL || 1975)}) applied for reels &gt; 30T.</p>
+              <p>• Fremantle crane ({fmt(data.constants?.FREM_CRANE_LIGHT || 500)}-{fmt(data.constants?.FREM_CRANE_HEAVY || 700)}) applied to all Perth deliveries.</p>
+              <p>• {(data.constants?.DEST_FUEL_SURCHARGE * 100).toFixed(0)}% Fuel Surcharge applied to all transport rates.</p>
+              <p>• Pilot vehicles ($400) and Western Power permits ({fmt(data.constants?.WP_PERMIT_PER_REEL || 400)}) applied where applicable.</p>
+              <p>• All work performed under Master Service Level Agreement (Trade Lane Specific) with an Effective Date of 1 November 2025 (copy of which is available on request).</p>
             </div>
           </div>
         ) : (
@@ -167,33 +167,33 @@ function CalculatorApp({ token, userEmail, isAdmin, onLogout, onAdminClick }) {
       const apiUrl = import.meta.env.VITE_API_URL || '';
       fetch(`${apiUrl}/api/calculate`, {
         method: 'POST',
-        headers: { 
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify(formData)
       })
-      .then(res => {
-        if (res.status === 401) {
+        .then(res => {
+          if (res.status === 401) {
             onLogout();
             throw new Error("Session expired. Please login again.");
-        }
-        return res.json();
-      })
-      .then(data => {
-        if (data.error) {
-          setError(data.error);
-          setResult(null);
-        } else {
-          setResult(data);
-        }
-      })
-      .catch(err => {
-        setError(err.message || "Failed to connect to backend server.");
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+          }
+          return res.json();
+        })
+        .then(data => {
+          if (data.error) {
+            setError(data.error);
+            setResult(null);
+          } else {
+            setResult(data);
+          }
+        })
+        .catch(err => {
+          setError(err.message || "Failed to connect to backend server.");
+        })
+        .finally(() => {
+          setLoading(false);
+        });
     }, 500);
 
     return () => clearTimeout(timer);
@@ -217,18 +217,18 @@ function CalculatorApp({ token, userEmail, isAdmin, onLogout, onAdminClick }) {
           </div>
         </div>
         <div className="meta-info">
-          <div style={{fontWeight: 500, color: 'var(--text-main)', marginBottom: '0.25rem'}}>{userEmail}</div>
+          <div style={{ fontWeight: 500, color: 'var(--text-main)', marginBottom: '0.25rem' }}>{userEmail}</div>
           <div>Valid: 01/01/2026 – 31/12/2026</div>
-          <div style={{display: 'flex', gap: '0.75rem', alignItems: 'center', marginTop: '0.5rem'}}>
+          <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', marginTop: '0.5rem' }}>
             <button className="theme-toggle" onClick={() => setTheme(t => t === 'dark' ? 'light' : 'dark')} title="Toggle Theme">
-                {theme === 'dark' ? (
+              {theme === 'dark' ? (
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
-                ) : (
+              ) : (
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
-                )}
+              )}
             </button>
-            <button className="theme-toggle" onClick={onLogout} title="Logout" style={{color: '#f87171', borderColor: 'rgba(248, 113, 113, 0.2)'}}>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+            <button className="theme-toggle" onClick={onLogout} title="Logout" style={{ color: '#f87171', borderColor: 'rgba(248, 113, 113, 0.2)' }}>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
             </button>
           </div>
         </div>
@@ -238,7 +238,7 @@ function CalculatorApp({ token, userEmail, isAdmin, onLogout, onAdminClick }) {
         <section className="input-side">
           <div className="glass-panel form-section">
             <h2 className="panel-title">Shipment Parameters</h2>
-            
+
             <div className="input-row">
               <div className="form-group">
                 <label>Origin Location</label>
@@ -259,7 +259,7 @@ function CalculatorApp({ token, userEmail, isAdmin, onLogout, onAdminClick }) {
             <div className="section-divider"></div>
 
             <h2 className="panel-title">Reel Specifications</h2>
-            
+
             <div className="input-row">
               <div className="form-group">
                 <label>Weight (T)</label>
@@ -271,7 +271,7 @@ function CalculatorApp({ token, userEmail, isAdmin, onLogout, onAdminClick }) {
               </div>
             </div>
 
-            <div className="form-group" style={{marginTop: '0.25rem'}}>
+            <div className="form-group" style={{ marginTop: '0.25rem' }}>
               <label>Dimensions in cm (L × W × H)</label>
               <div className="dimensions-container">
                 <input type="number" name="dimL" min="1" step="1" placeholder="L" value={formData.dimL} onChange={handleChange} required />
@@ -301,7 +301,7 @@ function CalculatorApp({ token, userEmail, isAdmin, onLogout, onAdminClick }) {
 
         <aside className="results-side">
           <div className="glass-panel results-panel">
-            
+
             {loading && !result && (
               <div className="state-container fade-in">
                 <div className="loader"></div>
@@ -318,7 +318,7 @@ function CalculatorApp({ token, userEmail, isAdmin, onLogout, onAdminClick }) {
 
             {error && (
               <div className="state-container fade-in">
-                <div className="state-icon" style={{color: '#f87171'}}>⚠</div>
+                <div className="state-icon" style={{ color: '#f87171' }}>⚠</div>
                 <p>{error}</p>
               </div>
             )}
@@ -347,7 +347,7 @@ function CalculatorApp({ token, userEmail, isAdmin, onLogout, onAdminClick }) {
                 </div>
 
                 <div className="terms-mini">
-                  * Demurrage applicable at ${result.demurr}/hr post free time. 
+                  * Demurrage applicable at ${result.demurr}/hr post free time.
                   This is an AI estimation interface. Final pricing is strictly as agreed in the MF commercial tender.
                 </div>
               </div>
@@ -360,8 +360,8 @@ function CalculatorApp({ token, userEmail, isAdmin, onLogout, onAdminClick }) {
 
       <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '-0.5rem', marginBottom: '0.5rem' }}>
         <button onClick={() => setShowTariff(true)} className="secondary-btn" style={{ padding: '0.625rem 1.25rem', fontSize: '0.8125rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '14px', height: '14px' }}><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-            Full Tariff Schedule
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '14px', height: '14px' }}><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+          Full Tariff Schedule
         </button>
       </div>
 
@@ -369,6 +369,7 @@ function CalculatorApp({ token, userEmail, isAdmin, onLogout, onAdminClick }) {
         <section className="terms-section glass-panel fade-in">
           <h3 className="terms-title">TERMS & CONDITIONS</h3>
           <ul className="terms-list">
+            <li className="terms-highlight">This Coastal Conveyor Reel Estimator is a tool made available by AAW Project Logistics, solely for the use of ContiTech Australia Pty Ltd. Any order placed by ContiTech Australia Pty Ltd with AAW Project Logistics, or work performed by AAW Project Logistics for ContiTech Australia Pty Ltd, is on the basis of the agreed pricing and other terms and conditions between the parties, being (for the avoidance of doubt) the Master Service Level Agreement (Trade Lane Specific) with an Effective Date of 1 November 2025 (copy of which is available on request).</li>
             <li>Seafreight calculated on FRT basis — weight (T) or CBM whichever is greater, at a 1:1 ratio per reel.</li>
             <li>Seafreight rates subject to fluctuation in BAF, coastal surcharge & local charges. Offer basis 2 units per Mafi trailer. Subject to available equipment and vessel schedule.</li>
             <li className={result?.crane_applies ? "terms-highlight" : ""}>Melbourne crane cost is an average assumption of $1,975 per reel for reels over 30T. Actual cost determined by terminal operator. Melbourne has fork capacity to approx. 31T subject to reel dimensions.</li>
@@ -380,7 +381,6 @@ function CalculatorApp({ token, userEmail, isAdmin, onLogout, onAdminClick }) {
             <li className="terms-highlight">Mine site deliveries allow 5hrs across port & mine site. Time starts from gate entry. Demurrage rate: {result ? fmt(result.demurr) : '$320'}/hr after free time allowance.</li>
             <li>Transport trailers subject to availability. Max loaded height ex Fremantle is 5.8m (incl. 1m for trailer).</li>
             <li>10% GST applicable where applicable. All work performed under AAW Global Logistics Pty Ltd general terms & conditions, available upon request.</li>
-            <li className="terms-highlight">This is an estimation only. Final rates applied as per conditions agreed in MF tender.</li>
           </ul>
         </section>
       )}
@@ -391,46 +391,46 @@ function CalculatorApp({ token, userEmail, isAdmin, onLogout, onAdminClick }) {
 }
 
 function App() {
-    const [token, setToken] = useState(localStorage.getItem('token'));
-    const [userEmail, setUserEmail] = useState(localStorage.getItem('userEmail'));
-    const [isAdmin, setIsAdmin] = useState(localStorage.getItem('isAdmin') === 'true');
-    const [page, setPage] = useState('calculator');
+  const [token, setToken] = useState(localStorage.getItem('token'));
+  const [userEmail, setUserEmail] = useState(localStorage.getItem('userEmail'));
+  const [isAdmin, setIsAdmin] = useState(localStorage.getItem('isAdmin') === 'true');
+  const [page, setPage] = useState('calculator');
 
-    const handleLogin = (newToken, email, adminFlag) => {
-        setToken(newToken);
-        setUserEmail(email);
-        setIsAdmin(adminFlag);
-        if (adminFlag) setPage('admin');
-        localStorage.setItem('token', newToken);
-        localStorage.setItem('userEmail', email);
-        localStorage.setItem('isAdmin', adminFlag ? 'true' : 'false');
-    };
+  const handleLogin = (newToken, email, adminFlag) => {
+    setToken(newToken);
+    setUserEmail(email);
+    setIsAdmin(adminFlag);
+    if (adminFlag) setPage('admin');
+    localStorage.setItem('token', newToken);
+    localStorage.setItem('userEmail', email);
+    localStorage.setItem('isAdmin', adminFlag ? 'true' : 'false');
+  };
 
-    const handleLogout = () => {
-        setToken(null);
-        setUserEmail(null);
-        setIsAdmin(false);
-        setPage('calculator');
-        localStorage.removeItem('token');
-        localStorage.removeItem('userEmail');
-        localStorage.removeItem('isAdmin');
-    };
+  const handleLogout = () => {
+    setToken(null);
+    setUserEmail(null);
+    setIsAdmin(false);
+    setPage('calculator');
+    localStorage.removeItem('token');
+    localStorage.removeItem('userEmail');
+    localStorage.removeItem('isAdmin');
+  };
 
-    if (!token) {
-        return <AuthPage onLogin={handleLogin} />;
-    }
+  if (!token) {
+    return <AuthPage onLogin={handleLogin} />;
+  }
 
-    if (page === 'admin' && isAdmin) {
-        return <AdminPage token={token} onBack={() => setPage('calculator')} />;
-    }
+  if (page === 'admin' && isAdmin) {
+    return <AdminPage token={token} onBack={() => setPage('calculator')} />;
+  }
 
-    return <CalculatorApp 
-      token={token} 
-      userEmail={userEmail} 
-      isAdmin={isAdmin} 
-      onLogout={handleLogout} 
-      onAdminClick={() => setPage('admin')} 
-    />;
+  return <CalculatorApp
+    token={token}
+    userEmail={userEmail}
+    isAdmin={isAdmin}
+    onLogout={handleLogout}
+    onAdminClick={() => setPage('admin')}
+  />;
 }
 
 export default App;
