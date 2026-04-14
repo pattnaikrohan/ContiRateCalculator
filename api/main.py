@@ -220,7 +220,7 @@ def login(user: UserLogin):
     # This allows the Flow to filter/check both at once
     try:
         # Hardcoded Admin Login for Demonstration/Admin Panel access
-        if user.email == "admin@conti.com" and user.password == "admin123":
+        if user.email == "admin@conti.com" and user.password == "ContiAdmin@2026!":
             token = create_access_token(data={"sub": user.email, "is_admin": True})
             return {"access_token": token, "token_type": "bearer", "email": user.email, "is_admin": True}
 

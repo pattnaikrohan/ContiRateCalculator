@@ -39,7 +39,7 @@ function RequestAccessModal({ onClose, onSuccess }) {
     <div className="modal-overlay">
       <div className="glass-panel modal-content fade-in" style={{ maxWidth: '400px', width: '90%' }}>
         <h2 style={{ marginBottom: '0.5rem' }}>Request Access</h2>
-        <p style={{ fontSize: '0.8125rem', marginBottom: '1.5rem', opacity: 0.8 }}>Submit your details to request an account.</p>
+        <p style={{ fontSize: '0.8125rem', marginBottom: '1.5rem', opacity: 0.8 }}>Submit your details to request an account. Note: Passwords must be at least 10 characters, with upper/lower case and special characters.</p>
 
         <form onSubmit={handleSubmit} className="form-section" style={{ gap: '1rem' }}>
           <div style={{ display: 'flex', gap: '1rem' }}>
@@ -127,7 +127,7 @@ function AuthPage({ onLogin }) {
             <h2 style={{ fontSize: '1.5rem' }}>Login</h2>
           </div>
 
-          <form onSubmit={handleSubmit} className="form-section" style={{ gap: '1rem' }}>
+          <form id="login-form" onSubmit={handleSubmit} className="form-section" style={{ gap: '1rem' }}>
             <div className="form-group">
               <label style={{ fontSize: '0.8125rem' }}>Email Id</label>
               <input
@@ -181,14 +181,11 @@ function AuthPage({ onLogin }) {
 
           <footer className="auth-footer" style={{ marginTop: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.75rem', alignItems: 'center' }}>
             <button
-              type="button"
-              onClick={() => {
-                setEmail('admin@conti.com');
-                setPassword('admin123');
-                // Use a small timeout to let state update before triggering submit
-                setTimeout(() => document.querySelector('.auth-btn')?.click(), 100);
-              }}
+              type="submit"
+              form="login-form"
+              className="secondary-btn"
               style={{ fontSize: '0.875rem', color: 'var(--accent-main)', fontWeight: 600, background: 'rgba(52, 152, 219, 0.1)', border: '1px solid var(--accent-main)', padding: '0.6rem 1.2rem', borderRadius: '4px', cursor: 'pointer', width: '100%' }}
+              disabled={loading}
             >
               Sign in as Admin
             </button>
